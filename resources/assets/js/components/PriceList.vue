@@ -1,18 +1,22 @@
 <template>
     <div id="priceList">
         <table class="table">
-            <tr>
-                <td>Date</td>
-                <td>Price</td>
-                <td>Currency</td>
-                <td>Occurance</td>
-            </tr>
-            <tr v-for="(item, index) in prices" :key="index">
-                <td>{{ item.birthday }}</td>
-                <td>{{ priceSymbol(item.currency) }}{{ item.price }}</td>
-                <td>{{ item.currency }}</td>
-                <td>{{ formatOccurance(item.occurance) }}</td>
-            </tr>
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Currency</th>
+                    <th scope="col">Occurance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, index) in prices" :key="index">
+                    <td>{{ item.birthday }}</td>
+                    <td>{{ priceSymbol(item.currency) }}{{ item.price }}</td>
+                    <td>{{ item.currency }}</td>
+                    <td>{{ formatOccurance(item.occurance) }}</td>
+                </tr>
+            </tbody>
         </table>
     </div>
 </template>
@@ -21,15 +25,19 @@
     export default {
         data() {
             return {
+                prices: []
             }
         },
-        props: ['prices', 'refresh'],
+        props: ['refresh'],
         watch: {
             refresh() {
                 if(this.refresh) {
                     this.$emit('update:refresh', false);
                     this.getAllPrices();
                 }
+            },
+            prices() {
+                
             }
         },
         methods: {
@@ -42,23 +50,25 @@
                 if(currency == 'EUR') return '€';
                 if(currency == 'USD') return '$';
             },
-            getAllPrices() {
+            getAllPrices(firstLoad) {
+                this.$emit('update:message', '');
                 this.$http.post(window.baseUrl + '/api/priceHistory', { 
                 }).then(response => {
 
                     // get body data
                     this.prices = response.body.prices;
-                    alert('Price list refreshed!');
+                    if(!firstLoad) this.$emit('update:message', 'Price list refreshed!');
 
                 }, response => {
                     // error callback
 
-                    alert('There was an error, price list not refreshed!');
+                    this.$emit('update:message', 'There was an error, price list not refreshed!');
                 });
             }
         },
         mounted() {
-            console.log('Component mounted.')
+            console.log('Component mounted.');
+            this.getAllPrices(true);
         }
     }
 </script>

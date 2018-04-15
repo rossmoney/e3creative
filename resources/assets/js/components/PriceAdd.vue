@@ -4,7 +4,7 @@
             <div class="col-md-8">
                 <div class="card card-default">
                     <label for="day">Day of Birth:</label>
-                    <input name="day" type="text" v-model="day" maxlength="2" /> <br>
+                    <input name="day" type="text" v-model="day" maxlength="2" />
 
                     <label for="month">Month of Birth:</label> 
                     <input name="month" type="text" v-model="month" maxlength="2" />
@@ -28,6 +28,7 @@
         props: ['refresh'],
         methods: {
             getPrice() {
+                this.$emit('update:message', '');
                 this.$http.post(window.baseUrl + '/api/priceLastBirthday', { 
                     day: this.day, 
                     month: this.month 
@@ -39,7 +40,8 @@
 
                 }, response => {
                     // error callback
-                    alert(response.body.message);
+
+                    this.$emit('update:message', response.body.message);
                 });
             }
         },

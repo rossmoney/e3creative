@@ -14010,14 +14010,16 @@ window.addEventListener('load', function () {
     var app = new Vue({
         el: '#app',
         data: {
-            globalRefresh: false
+            globalRefresh: false,
+            message: ''
         },
-        computed: {
-            /*compiledMarkdown: function () {
-              return marked(this.input, { sanitize: true })
-            }*/
-        },
-        methods: {}
+        watch: {
+            message: function message() {
+                setTimeout(function () {
+                    this.message = '';
+                }, 5000);
+            }
+        }
     });
 });
 
@@ -48922,6 +48924,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         getPrice: function getPrice() {
             var _this = this;
 
+            this.$emit('update:message', '');
             this.$http.post(window.baseUrl + '/api/priceLastBirthday', {
                 day: this.day,
                 month: this.month
@@ -48932,7 +48935,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this.$emit('update:refresh', true);
             }, function (response) {
                 // error callback
-                alert(response.body.message);
+
+                _this.$emit('update:message', response.body.message);
             });
         }
     },
@@ -48975,8 +48979,6 @@ var render = function() {
               }
             }
           }),
-          _vm._v(" "),
-          _c("br"),
           _vm._v(" "),
           _c("label", { attrs: { for: "month" } }, [_vm._v("Month of Birth:")]),
           _vm._v(" "),
@@ -49092,20 +49094,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
-        return {};
+        return {
+            prices: []
+        };
     },
 
-    props: ['prices', 'refresh'],
+    props: ['refresh'],
     watch: {
         refresh: function refresh() {
             if (this.refresh) {
                 this.$emit('update:refresh', false);
                 this.getAllPrices();
             }
-        }
+        },
+        prices: function prices() {}
     },
     methods: {
         formatOccurance: function formatOccurance(occurance) {
@@ -49117,23 +49126,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             if (currency == 'EUR') return '€';
             if (currency == 'USD') return '$';
         },
-        getAllPrices: function getAllPrices() {
+        getAllPrices: function getAllPrices(firstLoad) {
             var _this = this;
 
+            this.$emit('update:message', '');
             this.$http.post(window.baseUrl + '/api/priceHistory', {}).then(function (response) {
 
                 // get body data
                 _this.prices = response.body.prices;
-                alert('Price list refreshed!');
+                if (!firstLoad) _this.$emit('update:message', 'Price list refreshed!');
             }, function (response) {
                 // error callback
 
-                alert('There was an error, price list not refreshed!');
+                _this.$emit('update:message', 'There was an error, price list not refreshed!');
             });
         }
     },
     mounted: function mounted() {
         console.log('Component mounted.');
+        this.getAllPrices(true);
     }
 });
 
@@ -49146,12 +49157,11 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { attrs: { id: "priceList" } }, [
-    _c(
-      "table",
-      { staticClass: "table" },
-      [
-        _vm._m(0),
-        _vm._v(" "),
+    _c("table", { staticClass: "table" }, [
+      _vm._m(0),
+      _vm._v(" "),
+      _c(
+        "tbody",
         _vm._l(_vm.prices, function(item, index) {
           return _c("tr", { key: index }, [
             _c("td", [_vm._v(_vm._s(item.birthday))]),
@@ -49167,9 +49177,8 @@ var render = function() {
             _c("td", [_vm._v(_vm._s(_vm.formatOccurance(item.occurance)))])
           ])
         })
-      ],
-      2
-    )
+      )
+    ])
   ])
 }
 var staticRenderFns = [
@@ -49177,14 +49186,16 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("td", [_vm._v("Date")]),
-      _vm._v(" "),
-      _c("td", [_vm._v("Price")]),
-      _vm._v(" "),
-      _c("td", [_vm._v("Currency")]),
-      _vm._v(" "),
-      _c("td", [_vm._v("Occurance")])
+    return _c("thead", [
+      _c("tr", [
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Date")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Price")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Currency")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Occurance")])
+      ])
     ])
   }
 ]

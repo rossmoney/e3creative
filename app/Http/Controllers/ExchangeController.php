@@ -51,13 +51,11 @@ class ExchangeController extends Controller
     }
 
     public function getSavedPrices(Request $r) {
-        $prices = BirthdayPrice::select(\DB::raw('DATE_FORMAT(birthday, "%D %M %Y") as birthday'), \DB::raw('ANY_VALUE(currency) as currency'), \DB::raw('ANY_VALUE(price) as price'), \DB::raw('COUNT(1) as occurance'))->groupBy('birthday', 'currency')->orderBy('birthday', 'DESC')->get(); //we can do this as thereotically the prices should be the same for same date and currency.
+        $prices = BirthdayPrice::select('birthday as date', \DB::raw('DATE_FORMAT(birthday, "%D %M %Y") as birthday'), \DB::raw('ANY_VALUE(currency) as currency'), \DB::raw('ANY_VALUE(price) as price'), \DB::raw('COUNT(1) as occurance'))->groupBy('birthday', 'currency')->orderBy('date', 'DESC')->get(); //we can do this as thereotically the prices should be the same for same date and currency.
         return ['prices' => $prices];
     }
 
     public function showPrices(Request $r) {
-        $prices = $this->getSavedPrices($r);
-
-        return view('prices.list', ['prices' => $prices['prices']]);
+        return view('prices.list');
     }
 }

@@ -25,15 +25,15 @@ window.addEventListener('load', function () {
     const app = new Vue({
         el: '#app',
         data: {
-            globalRefresh: false
+            globalRefresh: false,
+            message: ''
         },
-        computed: {
-            /*compiledMarkdown: function () {
-              return marked(this.input, { sanitize: true })
-            }*/
-        },
-        methods: {
-
+        watch: {
+            message() {
+                setTimeout(function() {
+                    this.message = '';
+                }, 5000);
+            }
         }
     });
 });

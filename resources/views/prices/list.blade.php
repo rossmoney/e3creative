@@ -16,8 +16,14 @@
         <div id="app">
             <div class="container">
                 <p>Please enter your day and month of birth, to check the price of GBP on your last birthday.</p>
-                <price-add :refresh.sync="globalRefresh"></price-add>
-                <price-list :prices="{{ json_encode($prices) }}" :refresh.sync="globalRefresh"></price-list>
+                <div v-show="message != '' && message != 'Price list refreshed!'" v-cloak class="alert alert-danger" role="alert">
+                    @{{ message }}
+                </div>
+                <div v-show="message != '' && message == 'Price list refreshed!'" v-cloak class="alert alert-success" role="alert">
+                    @{{ message }}
+                </div>
+                <price-add :refresh.sync="globalRefresh" :message.sync="message"></price-add>
+                <price-list :refresh.sync="globalRefresh" :message.sync="message"></price-list>
             </div>
         </div>
     </body>
